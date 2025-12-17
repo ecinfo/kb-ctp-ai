@@ -2,15 +2,31 @@ import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Send, Square, PanelLeftOpen, RotateCcw } from "lucide-react";
+import {
+  Send,
+  Square,
+  PanelLeftOpen,
+  RotateCcw,
+  Copy,
+  Check,
+} from "lucide-react";
 import { MarkdownRenderer } from "./chatmarkdown/components/markdownHelper";
 import logo from "@/assets/knorr-traine.png";
 
-function MessageBubble({ role, content }) {
+function MessageBubble({ role, content, isLast, onRetry, isLoading }) {
   const isUser = role === "user";
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex w-full flex-col ${isUser ? "items-end" : "items-start"}`}
+    >
       <div
         className={`max-w-[80%] px-5 py-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
           isUser
@@ -24,6 +40,36 @@ function MessageBubble({ role, content }) {
           <MarkdownRenderer content={content} className="text-gray-800" />
         )}
       </div>
+
+      {!isUser && (
+        <div className="flex items-center gap-2 mt-2 ml-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-gray-400 hover:text-gray-600"
+            onClick={handleCopy}
+            title="Copy response"
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
+          </Button>
+
+          {isLast && !isLoading && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-gray-400 hover:text-gray-600"
+              onClick={onRetry}
+              title="Regenerate response"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -121,7 +167,7 @@ export function ChatInterface({
             ref={scrollRef}
             className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-gray-200  scrollbar-track-transparent"
           >
-            <div className="max-w-4xl mx-auto space-y-6 pb-4">
+            <div className="max-w-6xl mx-auto space-y-6 pb-4">
               {messages.map((m, index) => {
                 // Check if this is the last message, from assistant, and empty (Thinking state)
                 const isThinking =
@@ -142,26 +188,17 @@ export function ChatInterface({
 
                 // Render normal message bubble if content exists or it's a user message
                 if (m.content || m.role === "user") {
-                  const isError =
-                    m.role === "assistant" && m.content.startsWith("⚠️ Error:");
                   const isLastMessage = index === messages.length - 1;
 
                   return (
                     <div key={m.id} className="w-full mb-6 flex flex-col">
-                      <MessageBubble role={m.role} content={m.content} />
-                      {isError && isLastMessage && (
-                        <div className="flex justify-start mt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={onRetry}
-                            className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                          >
-                            <RotateCcw className="h-3 w-3" />
-                            Regenerate Response
-                          </Button>
-                        </div>
-                      )}
+                      <MessageBubble
+                        role={m.role}
+                        content={m.content}
+                        isLast={isLastMessage}
+                        onRetry={onRetry}
+                        isLoading={isLoading}
+                      />
                     </div>
                   );
                 }

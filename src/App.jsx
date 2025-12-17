@@ -143,7 +143,7 @@ function App() {
         body: JSON.stringify({
           messages: [{ role: "user", content: text }],
           stream: true,
-          max_tokens: 2000,
+          // max_tokens: 2000,
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -316,15 +316,6 @@ function App() {
 
     // Remove the failed interaction (user message + error response)
     setMessages((prev) => prev.slice(0, lastUserMessageIndex));
-
-    // Trigger submit with the same text
-    // We need to wait a tick to ensure state update or just pass text directly
-    // Since handleSubmit appends to current state, and we just sliced it,
-    // we need to be careful.
-    // Actually, simpler: just remove the ERROR message if it exists,
-    // and keep the user message, then call the API again?
-    // But handleSubmit adds a NEW user message.
-    // So removing both is the correct approach to reuse handleSubmit.
 
     setTimeout(() => handleSubmit(text), 0);
   };
