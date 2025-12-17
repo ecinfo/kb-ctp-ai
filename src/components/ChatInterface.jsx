@@ -130,10 +130,9 @@ export function ChatInterface({
             <div className="flex gap-4 flex-wrap justify-center max-w-3xl">
               {[
                 "What is CTP (Customer Training Program) in Knorr-Bremse Rail Services?",
-                "Which CTP training courses are available, and who can attend them?",
                 "How do I register or request a CTP training course?",
                 "What certifications do I receive after completing CTP training?",
-                "Explain rail braking systems covered in CTP training (for exams).",
+                "Explain rail breaking systems covered in CTP training (for exams).",
                 "What are the attendance and assessment requirements to complete CTP training?",
               ].map((item, idx) => (
                 <button
