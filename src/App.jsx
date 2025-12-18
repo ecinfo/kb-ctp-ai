@@ -143,7 +143,7 @@ function App() {
         body: JSON.stringify({
           messages: [{ role: "user", content: text }],
           stream: true,
-          // max_tokens: 2000,
+          max_tokens: 400,
         }),
         signal: abortControllerRef.current.signal,
       });

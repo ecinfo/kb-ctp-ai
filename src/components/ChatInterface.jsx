@@ -86,6 +86,7 @@ export function ChatInterface({
   onToggleSidebar,
 }) {
   const scrollRef = useRef(null);
+  console.log("MESSAGES", messages);
 
   useEffect(() => {
     if (scrollRef.current) {
